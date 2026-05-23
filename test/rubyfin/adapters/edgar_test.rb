@@ -2,7 +2,7 @@ require_relative "../../test_helper"
 require "rubyfin/adapters/edgar"
 
 class EdgarAdapterTest < Minitest::Test
-  test "wraps Redgar companies filings items and facts" do
+  test "wraps EDGAR companies filings items and facts" do
     adapter = Rubyfin.edgar(database:)
 
     company = adapter.company("AAPL")
@@ -12,7 +12,7 @@ class EdgarAdapterTest < Minitest::Test
     assert_equal "edgar", adapter.source.id
     assert_equal ["edgar", 320193], company.natural_key
     assert_equal "AAPL", company.to_h.fetch(:ticker)
-    assert_kind_of Redgar::Company, company.raw
+    assert_kind_of Rubyfin::Edgar::Company, company.raw
 
     filing = filings.first
     assert_equal ["edgar", 320193, "0000320193-26-000001"], filing.natural_key
@@ -25,13 +25,13 @@ class EdgarAdapterTest < Minitest::Test
 
     assert_equal ["edgar", 320193, "company_facts"], facts.natural_key
     assert_equal "Revenues", facts.facts.fetch("us-gaap").fetch("Revenues").fetch("label")
-    assert_kind_of Redgar::CompanyFacts, facts.raw
+    assert_kind_of Rubyfin::Edgar::CompanyFacts, facts.raw
   end
 
-  test "maps Redgar not found errors to Rubyfin not found errors" do
+  test "maps EDGAR not found errors to Rubyfin not found errors" do
     adapter = Rubyfin.edgar(
-      database: Redgar::Database.new(
-        client: Redgar::Client.new(
+      database: Rubyfin::Edgar::Database.new(
+        client: Rubyfin::Edgar::Client.new(
           user_agent: "Windfall test contact@example.com",
           http_client: FakeHttpClient.new("/files/company_tickers.json" => [200, "{}"])
         )
@@ -46,8 +46,8 @@ class EdgarAdapterTest < Minitest::Test
   private
 
   def database
-    Redgar::Database.new(
-      client: Redgar::Client.new(
+    Rubyfin::Edgar::Database.new(
+      client: Rubyfin::Edgar::Client.new(
         user_agent: "Windfall test contact@example.com",
         http_client: FakeHttpClient.new(
           "/files/company_tickers.json" => [

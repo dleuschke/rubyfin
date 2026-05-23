@@ -1,46 +1,35 @@
-require "rubyfin"
-require "redgar"
+require "rubyfin/edgar"
 
 module Rubyfin
   module Adapters
     class Edgar
-      SOURCE = Source.new(
-        "edgar",
-        "SEC EDGAR",
-        "https://www.sec.gov/edgar",
-        {
-          adapter: "redgar",
-          redgar_version: Redgar::VERSION
-        }
-      )
-
       attr_reader :database
 
       def initialize(user_agent: nil, database: nil, client_options: {})
-        @database = database || Redgar.database(user_agent:, **client_options)
+        @database = database || Rubyfin::Edgar.database(user_agent:, **client_options)
       end
 
       def source
-        SOURCE
+        Rubyfin::Edgar.source
       end
 
       def company(identifier)
         wrap_company(database.company(identifier))
-      rescue Redgar::NotFound => e
+      rescue Rubyfin::Edgar::NotFound => e
         raise NotFound, e.message
       end
 
       def filings(identifier, forms: [], since: nil)
-        redgar_company = database.company(identifier)
-        redgar_company.filings.forms(forms).since(since).map { |filing| wrap_filing(filing) }
-      rescue Redgar::NotFound => e
+        edgar_company = database.company(identifier)
+        edgar_company.filings.forms(forms).since(since).map { |filing| wrap_filing(filing) }
+      rescue Rubyfin::Edgar::NotFound => e
         raise NotFound, e.message
       end
 
       def company_facts(identifier)
-        redgar_company = database.company(identifier)
-        wrap_company_facts(redgar_company, redgar_company.facts)
-      rescue Redgar::NotFound => e
+        edgar_company = database.company(identifier)
+        wrap_company_facts(edgar_company, edgar_company.facts)
+      rescue Rubyfin::Edgar::NotFound => e
         raise NotFound, e.message
       end
 

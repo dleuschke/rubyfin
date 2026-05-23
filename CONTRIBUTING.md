@@ -17,6 +17,8 @@ bundle exec rake test
 - Provide stable `natural_key` values for persistence.
 - Document source-specific rate limits, keys, freshness, and backfill behavior.
 - Use fake clients in tests; live provider smoke tests should be explicit.
+- For Rails support, keep integrations optional and adapter-specific, such as
+  `require "rubyfin/rails/edgar"`.
 
 ## Documentation
 

@@ -1,0 +1,6 @@
+require_relative "models/application_record"
+require_relative "models/company"
+require_relative "models/filing"
+require_relative "models/filing_item"
+require_relative "models/company_fact"
+require_relative "models/ingestion_run"

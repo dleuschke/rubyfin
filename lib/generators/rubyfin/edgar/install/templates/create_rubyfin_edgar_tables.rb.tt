@@ -1,0 +1,66 @@
+class CreateRubyfinEdgarTables < ActiveRecord::Migration[7.0]
+  def change
+    create_table :rubyfin_edgar_companies do |t|
+      t.bigint :cik, null: false
+      t.string :ticker, null: false
+      t.string :name
+      t.datetime :last_seen_at
+      t.timestamps
+    end
+    add_index :rubyfin_edgar_companies, :cik, unique: true
+    add_index :rubyfin_edgar_companies, :ticker
+
+    create_table :rubyfin_edgar_filings do |t|
+      t.references :rubyfin_edgar_company, null: false, foreign_key: { to_table: :rubyfin_edgar_companies }
+      t.bigint :cik, null: false
+      t.string :accession, null: false
+      t.string :form
+      t.datetime :filed_at
+      t.string :company_name
+      t.string :primary_document_name
+      t.string :index_url
+      t.string :primary_document_url
+      t.timestamps
+    end
+    add_index :rubyfin_edgar_filings, [:cik, :accession], unique: true
+    add_index :rubyfin_edgar_filings, :form
+    add_index :rubyfin_edgar_filings, :filed_at
+
+    create_table :rubyfin_edgar_filing_items do |t|
+      t.references :rubyfin_edgar_filing, null: false, foreign_key: { to_table: :rubyfin_edgar_filings }
+      t.bigint :cik, null: false
+      t.string :accession, null: false
+      t.string :code, null: false
+      t.string :label
+      t.timestamps
+    end
+    add_index :rubyfin_edgar_filing_items, [:cik, :accession, :code], unique: true
+    add_index :rubyfin_edgar_filing_items, :code
+
+    create_table :rubyfin_edgar_company_facts do |t|
+      t.references :rubyfin_edgar_company, null: false, foreign_key: { to_table: :rubyfin_edgar_companies }
+      t.bigint :cik, null: false
+      t.string :taxonomy, null: false
+      t.string :tag, null: false
+      t.json :payload
+      t.datetime :fetched_at
+      t.timestamps
+    end
+    add_index :rubyfin_edgar_company_facts, [:cik, :taxonomy, :tag], unique: true
+
+    create_table :rubyfin_edgar_ingestion_runs do |t|
+      t.datetime :started_at
+      t.datetime :finished_at
+      t.string :status, null: false
+      t.string :scope, null: false
+      t.json :options
+      t.json :counts
+      t.string :error_class
+      t.text :error_message
+      t.timestamps
+    end
+    add_index :rubyfin_edgar_ingestion_runs, :status
+    add_index :rubyfin_edgar_ingestion_runs, :scope
+    add_index :rubyfin_edgar_ingestion_runs, :started_at
+  end
+end

@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ["dleuschke@users.noreply.github.com"]
 
   spec.summary = "A la carte Ruby adapters for free and public financial data sources."
-  spec.description = "Rubyfin provides small, composable Ruby adapters for free and public financial data sources, starting with SEC EDGAR through Redgar."
+  spec.description = "Rubyfin provides small, composable Ruby adapters for free and public financial data sources, starting with SEC EDGAR."
   spec.homepage = "https://github.com/dleuschke/rubyfin"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2.0"
@@ -22,6 +22,8 @@ Gem::Specification.new do |spec|
   end
   spec.require_paths = ["lib"]
 
+  spec.add_development_dependency "activerecord", ">= 7.0"
   spec.add_development_dependency "minitest", ">= 5.0"
   spec.add_development_dependency "rake", ">= 13.0"
+  spec.add_development_dependency "sqlite3", ">= 1.4"
 end

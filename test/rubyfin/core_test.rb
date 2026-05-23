@@ -8,7 +8,7 @@ class CoreTest < Minitest::Test
       RbConfig.ruby,
       "-Ilib",
       "-e",
-      "require 'rubyfin'; puts defined?(Redgar).inspect",
+      "require 'rubyfin'; puts defined?(Rubyfin::Edgar).inspect",
       chdir: File.expand_path("../..", __dir__)
     )
 
