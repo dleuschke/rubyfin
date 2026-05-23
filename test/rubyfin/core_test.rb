@@ -8,12 +8,12 @@ class CoreTest < Minitest::Test
       RbConfig.ruby,
       "-Ilib",
       "-e",
-      "require 'rubyfin'; puts [defined?(Rubyfin::Edgar), defined?(Rubyfin::Fred), defined?(Rubyfin::Stooq), defined?(Rubyfin::WorldBank), defined?(Rubyfin::Oecd)].inspect",
+      "require 'rubyfin'; puts [defined?(Rubyfin::Edgar), defined?(Rubyfin::Fred), defined?(Rubyfin::Stooq), defined?(Rubyfin::WorldBank), defined?(Rubyfin::Oecd), defined?(Rubyfin::OpenFigi)].inspect",
       chdir: File.expand_path("../..", __dir__)
     )
 
     assert status.success?, stderr
-    assert_equal "[nil, nil, nil, nil, nil]", stdout.strip
+    assert_equal "[nil, nil, nil, nil, nil, nil]", stdout.strip
   end
 
   test "source exposes stable serialization" do

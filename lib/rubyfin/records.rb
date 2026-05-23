@@ -188,4 +188,41 @@ module Rubyfin
       }
     end
   end
+
+  Instrument = Data.define(
+    :source,
+    :figi,
+    :composite_figi,
+    :share_class_figi,
+    :ticker,
+    :name,
+    :exchange_code,
+    :market_sector,
+    :security_type,
+    :security_type2,
+    :security_description,
+    :metadata,
+    :raw
+  ) do
+    def natural_key
+      [source.id, figi]
+    end
+
+    def to_h
+      {
+        source_id: source.id,
+        figi:,
+        composite_figi:,
+        share_class_figi:,
+        ticker:,
+        name:,
+        exchange_code:,
+        market_sector:,
+        security_type:,
+        security_type2:,
+        security_description:,
+        metadata:
+      }
+    end
+  end
 end

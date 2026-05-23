@@ -12,6 +12,7 @@ require "rubyfin/fred"   # FRED only
 require "rubyfin/stooq"  # Stooq only
 require "rubyfin/world_bank" # World Bank
 require "rubyfin/oecd"   # OECD only
+require "rubyfin/open_figi" # OpenFIGI only
 ```
 
 Start with the adapter you need. Add more later.
@@ -93,6 +94,7 @@ Common Rubyfin records:
 - `Rubyfin::Series`
 - `Rubyfin::Observation`
 - `Rubyfin::PriceBar`
+- `Rubyfin::Instrument`
 
 Each record exposes:
 
@@ -260,6 +262,39 @@ observation.natural_key
 #=> ["oecd", "OECD.SDD.NAD,DSD_NAAG@DF_NAAG_I/<dimension-key>", #<Date ...>, nil, nil]
 ```
 
+## Use OpenFIGI
+
+OpenFIGI maps security identifiers such as tickers, ISINs, CUSIPs, and FIGIs
+to FIGI instrument metadata. Rubyfin's OpenFIGI adapter is runtime-only and is
+for identifier resolution, not prices or fundamentals.
+
+```ruby
+require "rubyfin/open_figi"
+
+result = Rubyfin::OpenFigi.map_ticker(
+  "AAPL",
+  exch_code: "US",
+  api_key: ENV["OPENFIGI_API_KEY"]
+).first
+
+instrument = result.instruments.first
+instrument.figi
+instrument.composite_figi
+instrument.share_class_figi
+```
+
+For provider-style records:
+
+```ruby
+require "rubyfin/adapters/open_figi"
+
+open_figi = Rubyfin.open_figi(api_key: ENV["OPENFIGI_API_KEY"])
+instrument = open_figi.map_ticker("AAPL", exch_code: "US").flatten.first
+
+instrument.natural_key
+#=> ["open_figi", "BBG000B9XRY4"]
+```
+
 ## Rails: Persist EDGAR Data
 
 Rubyfin keeps Rails optional. Plain `require "rubyfin"` and
@@ -317,6 +352,7 @@ trading signals, theses, alerts, portfolios, or app-specific interpretation.
 - Stooq: `require "rubyfin/stooq"`
 - World Bank: `require "rubyfin/world_bank"`
 - OECD: `require "rubyfin/oecd"`
+- OpenFIGI: `require "rubyfin/open_figi"`
 
 Additional adapters should follow the same a la carte require pattern.
 
@@ -335,6 +371,7 @@ Tests use fake HTTP clients and do not make live provider requests.
 - [Stooq adapter](docs/adapters/stooq.md)
 - [World Bank adapter](docs/adapters/world_bank.md)
 - [OECD adapter](docs/adapters/oecd.md)
+- [OpenFIGI adapter](docs/adapters/open_figi.md)
 
 ## Documentation
 
