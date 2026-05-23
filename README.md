@@ -10,7 +10,8 @@ require "rubyfin"        # core records only
 require "rubyfin/edgar"  # SEC EDGAR only
 require "rubyfin/fred"   # FRED only
 require "rubyfin/stooq"  # Stooq only
-require "rubyfin/world_bank" # World Bank only
+require "rubyfin/world_bank" # World Bank
+require "rubyfin/oecd"   # OECD only
 ```
 
 Start with the adapter you need. Add more later.
@@ -223,6 +224,42 @@ observation.natural_key
 #=> ["world_bank", "USA:NY.GDP.MKTP.CD", #<Date ...>, nil, nil]
 ```
 
+## Use OECD
+
+The OECD Data Explorer API provides free SDMX-based access to OECD datasets
+without an API key. Rubyfin's OECD adapter is runtime-only and generic because
+OECD dataflows vary widely in dimensions and metadata.
+
+```ruby
+require "rubyfin/oecd"
+
+observations = Rubyfin::Oecd.data(
+  "OECD.SDD.NAD,DSD_NAAG@DF_NAAG_I",
+  start_period: "2022",
+  end_period: "2022"
+)
+
+observations.first.value
+observations.first.dimensions
+```
+
+For provider-style records:
+
+```ruby
+require "rubyfin/adapters/oecd"
+
+oecd = Rubyfin.oecd
+
+observation = oecd.observations(
+  "OECD.SDD.NAD,DSD_NAAG@DF_NAAG_I",
+  start_period: "2022",
+  end_period: "2022"
+).first
+
+observation.natural_key
+#=> ["oecd", "OECD.SDD.NAD,DSD_NAAG@DF_NAAG_I/<dimension-key>", #<Date ...>, nil, nil]
+```
+
 ## Rails: Persist EDGAR Data
 
 Rubyfin keeps Rails optional. Plain `require "rubyfin"` and
@@ -279,12 +316,9 @@ trading signals, theses, alerts, portfolios, or app-specific interpretation.
 - FRED: `require "rubyfin/fred"`
 - Stooq: `require "rubyfin/stooq"`
 - World Bank: `require "rubyfin/world_bank"`
+- OECD: `require "rubyfin/oecd"`
 
-Planned adapter shape:
-
-```ruby
-require "rubyfin/oecd"
-```
+Additional adapters should follow the same a la carte require pattern.
 
 ## Testing
 
@@ -300,6 +334,7 @@ Tests use fake HTTP clients and do not make live provider requests.
 - [FRED adapter](docs/adapters/fred.md)
 - [Stooq adapter](docs/adapters/stooq.md)
 - [World Bank adapter](docs/adapters/world_bank.md)
+- [OECD adapter](docs/adapters/oecd.md)
 
 ## Documentation
 
