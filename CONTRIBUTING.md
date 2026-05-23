@@ -16,9 +16,12 @@ bundle exec rake test
 - Preserve provider-native objects in `raw` when useful.
 - Provide stable `natural_key` values for persistence.
 - Document source-specific rate limits, keys, freshness, and backfill behavior.
+- Check source terms before adding persistence helpers. Adapters with storage,
+  caching, archiving, redistribution, or AI/training restrictions should stay
+  runtime-only unless the project has explicit permission to persist them.
 - Use fake clients in tests; live provider smoke tests should be explicit.
 - For Rails support, keep integrations optional and adapter-specific, such as
-  `require "rubyfin/rails/edgar"` or `require "rubyfin/rails/fred"`.
+  `require "rubyfin/rails/edgar"`.
 
 ## Documentation
 

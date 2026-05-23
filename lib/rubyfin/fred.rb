@@ -5,6 +5,9 @@ module Rubyfin::Fred
   class MissingApiKey < Error; end
   class NotFound < Error; end
 
+  ATTRIBUTION_NOTICE = "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis."
+  TERMS_URL = "https://fred.stlouisfed.org/docs/api/terms_of_use.html"
+
   def self.source
     Rubyfin::Source.new(
       "fred",
@@ -12,9 +15,15 @@ module Rubyfin::Fred
       "https://fred.stlouisfed.org",
       {
         adapter: "rubyfin-fred",
+        attribution_notice: ATTRIBUTION_NOTICE,
+        terms_url: TERMS_URL,
         rubyfin_version: Rubyfin::VERSION
       }
     )
+  end
+
+  def self.attribution_notice
+    ATTRIBUTION_NOTICE
   end
 
   def self.client(**options)

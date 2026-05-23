@@ -92,13 +92,25 @@ Common Rubyfin records:
 
 Each record exposes:
 
-- `natural_key` for persistence.
+- `natural_key` for deduplication or persistence where source terms allow.
 - `to_h` for serialization.
 - `raw` for the adapter-native object when useful.
 
 ## Use FRED
 
 FRED requires an API key from the Federal Reserve Bank of St. Louis.
+Applications using the FRED API must display the required attribution notice:
+
+```ruby
+Rubyfin::Fred.attribution_notice
+#=> "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis."
+```
+
+Rubyfin's FRED adapter is runtime-only. It intentionally does not ship Rails
+persistence, caching, archiving, or database-ingestion helpers because the FRED
+terms restrict storing, caching, archiving, redistributing, and incorporating
+FRED content into databases. Review the FRED API terms and the terms for each
+series before using FRED data outside personal/internal research.
 
 ```ruby
 require "rubyfin/fred"
@@ -184,40 +196,6 @@ The generator creates:
 
 The Rails integration persists neutral public-source records. It does not model
 trading signals, theses, alerts, portfolios, or app-specific interpretation.
-
-## Rails: Persist FRED Data
-
-Install the FRED tables:
-
-```bash
-bin/rails generate rubyfin:fred:install
-bin/rails db:migrate
-```
-
-Require the Rails integration:
-
-```ruby
-require "rubyfin/rails/fred"
-```
-
-Ingest a FRED series idempotently:
-
-```ruby
-result = Rubyfin::Rails::Fred::Ingestor.new(
-  api_key: ENV.fetch("FRED_API_KEY")
-).ingest_series(
-  "FEDFUNDS",
-  observation_start: Date.new(2020, 1, 1)
-)
-
-result.counts
-```
-
-The generator creates:
-
-- `rubyfin_fred_series`
-- `rubyfin_fred_observations`
-- `rubyfin_fred_ingestion_runs`
 
 ## Current Adapters
 

@@ -44,6 +44,9 @@ module Rubyfin::Fred
       results = client.search("fed funds", limit: 1)
 
       assert_equal "FEDFUNDS", series.id
+      assert_equal "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis.", Rubyfin::Fred.attribution_notice
+      assert_equal Rubyfin::Fred.attribution_notice, Rubyfin::Fred.source.metadata.fetch(:attribution_notice)
+      assert_equal "https://fred.stlouisfed.org/docs/api/terms_of_use.html", Rubyfin::Fred.source.metadata.fetch(:terms_url)
       assert_equal "Federal Funds Effective Rate", results.first.title
       assert_equal Date.new(1954, 7, 1), series.observation_start
       assert_equal Time.new(2026, 5, 1, 10, 15, 0, "-05:00"), series.last_updated_at
