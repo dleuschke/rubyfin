@@ -18,7 +18,7 @@ bundle exec rake test
 - Document source-specific rate limits, keys, freshness, and backfill behavior.
 - Use fake clients in tests; live provider smoke tests should be explicit.
 - For Rails support, keep integrations optional and adapter-specific, such as
-  `require "rubyfin/rails/edgar"`.
+  `require "rubyfin/rails/edgar"` or `require "rubyfin/rails/fred"`.
 
 ## Documentation
 

@@ -95,4 +95,64 @@ module Rubyfin
       }
     end
   end
+
+  Series = Data.define(
+    :source,
+    :id,
+    :title,
+    :frequency,
+    :units,
+    :seasonal_adjustment,
+    :observation_start,
+    :observation_end,
+    :last_updated_at,
+    :metadata,
+    :raw
+  ) do
+    def natural_key
+      [source.id, id]
+    end
+
+    def to_h
+      {
+        source_id: source.id,
+        id:,
+        title:,
+        frequency:,
+        units:,
+        seasonal_adjustment:,
+        observation_start:,
+        observation_end:,
+        last_updated_at:,
+        metadata:
+      }
+    end
+  end
+
+  Observation = Data.define(
+    :source,
+    :series_id,
+    :observed_on,
+    :value,
+    :realtime_start,
+    :realtime_end,
+    :metadata,
+    :raw
+  ) do
+    def natural_key
+      [source.id, series_id, observed_on, realtime_start, realtime_end]
+    end
+
+    def to_h
+      {
+        source_id: source.id,
+        series_id:,
+        observed_on:,
+        value:,
+        realtime_start:,
+        realtime_end:,
+        metadata:
+      }
+    end
+  end
 end

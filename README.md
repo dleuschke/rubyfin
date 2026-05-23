@@ -8,6 +8,7 @@ It is designed around a simple rule:
 ```ruby
 require "rubyfin"        # core records only
 require "rubyfin/edgar"  # SEC EDGAR only
+require "rubyfin/fred"   # FRED only
 ```
 
 Start with the adapter you need. Add more later.
@@ -86,12 +87,53 @@ Common Rubyfin records:
 - `Rubyfin::Filing`
 - `Rubyfin::FilingItem`
 - `Rubyfin::CompanyFacts`
+- `Rubyfin::Series`
+- `Rubyfin::Observation`
 
 Each record exposes:
 
 - `natural_key` for persistence.
 - `to_h` for serialization.
 - `raw` for the adapter-native object when useful.
+
+## Use FRED
+
+FRED requires an API key from the Federal Reserve Bank of St. Louis.
+
+```ruby
+require "rubyfin/fred"
+
+series = Rubyfin::Fred.series(
+  "FEDFUNDS",
+  api_key: ENV.fetch("FRED_API_KEY")
+)
+
+series.title
+#=> "Federal Funds Effective Rate"
+
+observations = series.observations(
+  observation_start: Date.new(2020, 1, 1)
+)
+
+observations.first.observed_on
+observations.first.value
+```
+
+For provider-style records:
+
+```ruby
+require "rubyfin/adapters/fred"
+
+fred = Rubyfin.fred(api_key: ENV.fetch("FRED_API_KEY"))
+
+series = fred.series("FEDFUNDS")
+series.natural_key
+#=> ["fred", "FEDFUNDS"]
+
+observation = fred.observations("FEDFUNDS").first
+observation.natural_key
+#=> ["fred", "FEDFUNDS", #<Date ...>, #<Date ...>, #<Date ...>]
+```
 
 ## Rails: Persist EDGAR Data
 
@@ -143,14 +185,48 @@ The generator creates:
 The Rails integration persists neutral public-source records. It does not model
 trading signals, theses, alerts, portfolios, or app-specific interpretation.
 
+## Rails: Persist FRED Data
+
+Install the FRED tables:
+
+```bash
+bin/rails generate rubyfin:fred:install
+bin/rails db:migrate
+```
+
+Require the Rails integration:
+
+```ruby
+require "rubyfin/rails/fred"
+```
+
+Ingest a FRED series idempotently:
+
+```ruby
+result = Rubyfin::Rails::Fred::Ingestor.new(
+  api_key: ENV.fetch("FRED_API_KEY")
+).ingest_series(
+  "FEDFUNDS",
+  observation_start: Date.new(2020, 1, 1)
+)
+
+result.counts
+```
+
+The generator creates:
+
+- `rubyfin_fred_series`
+- `rubyfin_fred_observations`
+- `rubyfin_fred_ingestion_runs`
+
 ## Current Adapters
 
 - EDGAR: `require "rubyfin/edgar"`
+- FRED: `require "rubyfin/fred"`
 
 Planned adapter shape:
 
 ```ruby
-require "rubyfin/fred"
 require "rubyfin/stooq"
 require "rubyfin/world_bank"
 require "rubyfin/oecd"
@@ -167,4 +243,5 @@ Tests use fake HTTP clients and do not make live provider requests.
 ## Documentation
 
 - [EDGAR adapter](docs/adapters/edgar.md)
+- [FRED adapter](docs/adapters/fred.md)
 - [Contributing](CONTRIBUTING.md)
