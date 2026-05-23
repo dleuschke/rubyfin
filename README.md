@@ -10,6 +10,7 @@ require "rubyfin"        # core records only
 require "rubyfin/edgar"  # SEC EDGAR only
 require "rubyfin/fred"   # FRED only
 require "rubyfin/stooq"  # Stooq only
+require "rubyfin/world_bank" # World Bank only
 ```
 
 Start with the adapter you need. Add more later.
@@ -182,6 +183,46 @@ bar.natural_key
 #=> ["stooq", "spy.us", "daily", #<Date ...>]
 ```
 
+## Use World Bank
+
+The World Bank Indicators API provides free country-level macro and development
+indicator data without an API key. Rubyfin's World Bank adapter is runtime-only
+and does not ship Rails persistence helpers.
+
+```ruby
+require "rubyfin/world_bank"
+
+indicator = Rubyfin::WorldBank.indicator("NY.GDP.MKTP.CD")
+
+observations = Rubyfin::WorldBank.observations(
+  "us",
+  "NY.GDP.MKTP.CD",
+  date: "2020:2025"
+)
+
+observations.first.value
+```
+
+For provider-style records:
+
+```ruby
+require "rubyfin/adapters/world_bank"
+
+world_bank = Rubyfin.world_bank
+
+series = world_bank.series("NY.GDP.MKTP.CD")
+observation = world_bank.observations("us", "NY.GDP.MKTP.CD", date: "2025").first
+
+series.natural_key
+#=> ["world_bank", "NY.GDP.MKTP.CD"]
+
+observation.metadata[:country_iso3_code]
+#=> "USA"
+
+observation.natural_key
+#=> ["world_bank", "USA:NY.GDP.MKTP.CD", #<Date ...>, nil, nil]
+```
+
 ## Rails: Persist EDGAR Data
 
 Rubyfin keeps Rails optional. Plain `require "rubyfin"` and
@@ -237,11 +278,11 @@ trading signals, theses, alerts, portfolios, or app-specific interpretation.
 - EDGAR: `require "rubyfin/edgar"`
 - FRED: `require "rubyfin/fred"`
 - Stooq: `require "rubyfin/stooq"`
+- World Bank: `require "rubyfin/world_bank"`
 
 Planned adapter shape:
 
 ```ruby
-require "rubyfin/world_bank"
 require "rubyfin/oecd"
 ```
 
@@ -258,6 +299,7 @@ Tests use fake HTTP clients and do not make live provider requests.
 - [EDGAR adapter](docs/adapters/edgar.md)
 - [FRED adapter](docs/adapters/fred.md)
 - [Stooq adapter](docs/adapters/stooq.md)
+- [World Bank adapter](docs/adapters/world_bank.md)
 
 ## Documentation
 
