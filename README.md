@@ -9,6 +9,7 @@ It is designed around a simple rule:
 require "rubyfin"        # core records only
 require "rubyfin/edgar"  # SEC EDGAR only
 require "rubyfin/fred"   # FRED only
+require "rubyfin/stooq"  # Stooq only
 ```
 
 Start with the adapter you need. Add more later.
@@ -89,6 +90,7 @@ Common Rubyfin records:
 - `Rubyfin::CompanyFacts`
 - `Rubyfin::Series`
 - `Rubyfin::Observation`
+- `Rubyfin::PriceBar`
 
 Each record exposes:
 
@@ -147,6 +149,39 @@ observation.natural_key
 #=> ["fred", "FEDFUNDS", #<Date ...>, #<Date ...>, #<Date ...>]
 ```
 
+## Use Stooq
+
+Stooq provides free historical market data through CSV downloads. Rubyfin's
+Stooq adapter is runtime-only and does not ship Rails persistence helpers.
+Review Stooq's terms and licensed-data restrictions before storing or
+redistributing data. Stooq's CSV endpoint currently requires an API key;
+Rubyfin reads `STOOQ_API_KEY` by default.
+
+```ruby
+require "rubyfin/stooq"
+
+bars = Rubyfin::Stooq.prices(
+  "spy.us",
+  start_date: Date.new(2026, 1, 1),
+  end_date: Date.new(2026, 1, 31),
+  api_key: ENV.fetch("STOOQ_API_KEY")
+)
+
+bars.last.close
+```
+
+For provider-style records:
+
+```ruby
+require "rubyfin/adapters/stooq"
+
+stooq = Rubyfin.stooq(api_key: ENV.fetch("STOOQ_API_KEY"))
+
+bar = stooq.prices("spy.us", start_date: "2026-01-01").last
+bar.natural_key
+#=> ["stooq", "spy.us", "daily", #<Date ...>]
+```
+
 ## Rails: Persist EDGAR Data
 
 Rubyfin keeps Rails optional. Plain `require "rubyfin"` and
@@ -201,11 +236,11 @@ trading signals, theses, alerts, portfolios, or app-specific interpretation.
 
 - EDGAR: `require "rubyfin/edgar"`
 - FRED: `require "rubyfin/fred"`
+- Stooq: `require "rubyfin/stooq"`
 
 Planned adapter shape:
 
 ```ruby
-require "rubyfin/stooq"
 require "rubyfin/world_bank"
 require "rubyfin/oecd"
 ```
@@ -217,6 +252,12 @@ bundle exec rake test
 ```
 
 Tests use fake HTTP clients and do not make live provider requests.
+
+## Adapter Docs
+
+- [EDGAR adapter](docs/adapters/edgar.md)
+- [FRED adapter](docs/adapters/fred.md)
+- [Stooq adapter](docs/adapters/stooq.md)
 
 ## Documentation
 

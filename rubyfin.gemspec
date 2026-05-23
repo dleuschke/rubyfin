@@ -22,6 +22,8 @@ Gem::Specification.new do |spec|
   end
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "csv", ">= 3.0"
+
   spec.add_development_dependency "activerecord", ">= 7.0"
   spec.add_development_dependency "minitest", ">= 5.0"
   spec.add_development_dependency "rake", ">= 13.0"

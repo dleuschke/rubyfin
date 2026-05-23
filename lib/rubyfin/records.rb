@@ -155,4 +155,37 @@ module Rubyfin
       }
     end
   end
+
+  PriceBar = Data.define(
+    :source,
+    :symbol,
+    :traded_on,
+    :open,
+    :high,
+    :low,
+    :close,
+    :volume,
+    :interval,
+    :metadata,
+    :raw
+  ) do
+    def natural_key
+      [source.id, symbol, interval, traded_on]
+    end
+
+    def to_h
+      {
+        source_id: source.id,
+        symbol:,
+        traded_on:,
+        open:,
+        high:,
+        low:,
+        close:,
+        volume:,
+        interval:,
+        metadata:
+      }
+    end
+  end
 end
